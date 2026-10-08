@@ -1,3 +1,9 @@
+import os
+
+# Must run before any `app.*` import (config loads Settings at import time)
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["CORS_ORIGINS"] = "http://localhost:5173"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
