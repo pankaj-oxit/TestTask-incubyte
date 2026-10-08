@@ -14,10 +14,13 @@ build/
 .pytest_cache/
 htmlcov/
 
-# Frontend (Phase 6+ — not in repo until UI work is committed)
-frontend/
+# Frontend build / deps
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/*.tsbuildinfo
 
-# Node (if anything outside frontend/)
+# Node (repo root)
 node_modules/
 
 # Agent / local IDE — not for assessment submission

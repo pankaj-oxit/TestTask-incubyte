@@ -15,8 +15,9 @@ Companion docs: [REQUIREMENTS.md](REQUIREMENTS.md), [IMPLEMENTATION_PLAN.md](IMP
 | 2b | Docker Compose (Postgres + API) | Done | Vars in root `.env`; compose uses `${VAR}` only |
 | 3 | Employee CRUD + list/filters | Done | `/api/employees`, `/api/meta/filters`; 22 tests |
 | 4 | Seed 10k employees | Done | `make seed`, startup auto-seed if empty |
-| 5 | Insights API | Done | `/api/insights/*`, `core/stats.py`; 34 tests total |
-| 6–9 | UI, Railway, video | Pending | See IMPLEMENTATION_PLAN |
+| 5 | Insights API | Done | `/api/insights/*`, `core/stats.py`; 37 backend tests |
+| 6 | Frontend employees UI | Done | Vite + MUI + TanStack Query; list/filters/form |
+| 7–9 | Insights UI, polish, deploy, video | Pending | See IMPLEMENTATION_PLAN |
 
 **Update rule:** After each phase, update this file (progress table, test coverage, AI log, performance if measured).
 
@@ -41,7 +42,7 @@ Companion docs: [REQUIREMENTS.md](REQUIREMENTS.md), [IMPLEMENTATION_PLAN.md](IMP
 | Fixed FX | Deterministic tests; no external API |
 | No salary history | Scope control |
 | Docker for local Postgres | No system Postgres install required |
-| Frontend later | Backend + API tests first; `frontend/` not in git until UI phase |
+| Frontend in repo from Phase 6 | `frontend/` tracked; `node_modules/` and `dist/` gitignored |
 
 ---
 
@@ -51,8 +52,9 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 
 | Variable | Used by | Where defined |
 |----------|---------|----------------|
-| `DATABASE_URL` | SQLAlchemy, Alembic | Root `.env` (Docker) or `backend/.env` (host `make run`) |
+| `DATABASE_URL` | SQLAlchemy, Alembic | Root `.env` (Docker) or `backend/.env` (host: `make run` from repo root) |
 | `CORS_ORIGINS` | FastAPI CORS | Same — comma-separated origins |
+| `VITE_API_URL` | Frontend API client | `frontend/.env` (see `frontend/.env.example`) |
 
 `app/config.py` reads both via pydantic-settings. **Tests** set env vars in `conftest.py` before importing `app`.
 
@@ -70,9 +72,10 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | 4 | 2b | Add Docker, vars from `.env` only | No secrets in compose file; `make env` for host | `docker compose config` |
 | 5 | 2 | Fix `make run` / pytest env | `backend/.env` for localhost; tests set env before import | 8 tests pass |
 | 6 | 3 | `/implementer` Phase 3 | Layered repo/service; allow-list `sort_by`; health at `/api/health` | 22 tests pass |
-| 7 | 4–5 | `/implementer` Phase 4+5 | Bulk seed + auto-startup; insights USD + 10 buckets | 34 tests pass |
+| 7 | 4–5 | `/implementer` Phase 4+5 | Bulk seed + auto-startup; insights USD + 10 buckets | 37 tests pass |
+| 8 | 6 | `/implementer` Phase 6 | MUI employees CRUD UI; `/api` client; vitest x2 | build + tests green |
 
-*Add a row when you finish Phase 6+.*
+*Add a row when you finish Phase 7+.*
 
 ---
 
@@ -88,6 +91,15 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | Insights API (`test_insights_api.py`) | Done |
 
 Command: `cd backend && .venv/bin/pytest -q`
+
+## Test coverage (frontend)
+
+| Area | Status |
+|------|--------|
+| Employees list renders rows | Done (`EmployeesPage.test.tsx`) |
+| Form shows API validation error | Done (`EmployeeForm.test.tsx`) |
+
+Command: `cd frontend && npm test`
 
 ---
 

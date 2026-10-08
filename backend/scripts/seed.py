@@ -34,7 +34,7 @@ def main() -> None:
     except OperationalError as exc:
         print(
             "Database connection failed. Start Postgres first:\n"
-            "  from repo root: docker compose up db -d   (then: cd backend && make migrate)\n"
+            "  from repo root: make db-up   (then: make migrate)\n"
             "  or full stack: make up",
             file=sys.stderr,
         )

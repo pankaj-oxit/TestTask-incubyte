@@ -16,8 +16,9 @@
 | 3 | Employee CRUD + list/filters (TDD) | Done |
 | 4 | Seed 10k employees | Done |
 | 5 | Insights API | Done |
-| 6 | Frontend employees | **Next** |
-| 7–9 | Insights UI, deploy, video | Pending |
+| 6 | Frontend employees | Done |
+| 7 | Frontend insights | **Next** |
+| 8–9 | Polish, deploy, video | Pending |
 
 ---
 
@@ -102,7 +103,7 @@ Judges care about: clear thinking, good decisions, clean code, meaningful tests,
 
 **Local dev (recommended):** `cp .env.example .env` at repo root → `docker compose up --build` (Postgres + API; migrations on backend start).
 
-**Host API only:** `cd backend && make env && make migrate && make run` (uses `backend/.env` with `@localhost`).
+**Host API only:** `make env && make migrate && make run` from repo root (uses `backend/.env` with `@localhost`).
 
 **Deployed:** Railway provisions a Postgres instance and injects `DATABASE_URL` automatically.
 
