@@ -1,34 +1,37 @@
+# Secrets — never commit
+.env
+backend/.env
+
 # Python
-__pycache__/
-*.pyc
 .venv/
+**/__pycache__/
+*.pyc
 .coverage
+**/.coverage
 .pytest_cache/
 htmlcov/
 
-# Environment
-.env
-!.env.example
+# Frontend (Phase 6+ — not in repo until UI work is committed)
+frontend/
 
-# Database
+# Node (if anything outside frontend/)
+node_modules/
+
+# Agent / local IDE — not for assessment submission
+agent-output/
+.cursor/
+skills/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local DB files
 *.db
 *.sqlite3
 
-# Node
-node_modules/
-frontend/dist/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-.kiro/
-skills/
-
-# Dev-only (not for submission)
-agent-output/
+# Dev notes
 PROGRESS.md
-IMPLEMENTATION_PLAN.md
+/IMPLEMENTATION_PLAN.md
