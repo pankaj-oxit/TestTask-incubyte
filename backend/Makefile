@@ -27,7 +27,7 @@ migrate-status:
 run: .env
 	$(PYTHON) -m uvicorn app.main:app --reload
 
-seed:
+seed: .env
 	$(PYTHON) scripts/seed.py
 
 test:

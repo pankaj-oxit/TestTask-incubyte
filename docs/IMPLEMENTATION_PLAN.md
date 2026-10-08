@@ -14,8 +14,10 @@
 | 2 | Models, Alembic, FX seed, currency service | Done |
 | 2b | Docker Compose + root `.env` | Done |
 | 3 | Employee CRUD + list/filters (TDD) | Done |
-| 4 | Seed 10k employees | **Next** |
-| 5–9 | Insights, UI, deploy, video | Pending |
+| 4 | Seed 10k employees | Done |
+| 5 | Insights API | Done |
+| 6 | Frontend employees | **Next** |
+| 7–9 | Insights UI, deploy, video | Pending |
 
 ---
 
@@ -250,8 +252,8 @@ Base path: `/api`. All list responses are JSON. Errors use one clear shape: `{ "
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/insights/summary` | Total headcount, org average and median salary (USD) |
-| GET | `/insights/by-country` | Per country: headcount, min, max, avg, median (local currency **and** USD) |
-| GET | `/insights/by-job-title` | Same stats per job title (USD), optional `country` filter |
+| GET | `/insights/by-country` | Per country: headcount, min, max, avg, median (local **and** USD). Optional query `country` |
+| GET | `/insights/by-job-title` | Stats per job title (USD). Optional query `job_title`, optional `country` (scope) |
 | GET | `/insights/distribution` | Salary buckets (USD, 10 fixed buckets, server-computed). Query: `country`, `job_title` |
 
 ### Validation rules (enforced in schemas + service layer, all tested)

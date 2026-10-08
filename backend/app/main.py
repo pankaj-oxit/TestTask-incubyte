@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from app.config import settings
 from app.core.errors import (
     AppValidationError,
     ConflictError,
@@ -13,12 +12,16 @@ from app.core.errors import (
     not_found_handler,
     validation_error_handler,
 )
-from app.api import employees, meta
+from app.api import employees, insights, meta
+from app.config import settings
+from app.database import SessionLocal
+from app.services.seed_service import DEFAULT_COUNT, seed_employees
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(meta.health_router)
 api_router.include_router(meta.meta_router)
 api_router.include_router(employees.router)
+api_router.include_router(insights.router)
 
 app = FastAPI(
     title="ACME Salary Manager",
@@ -64,3 +67,14 @@ app.add_exception_handler(ConflictError, conflict_handler)
 app.add_exception_handler(AppValidationError, validation_error_handler)
 
 app.include_router(api_router)
+
+
+@app.on_event("startup")
+def seed_on_startup_if_empty() -> None:
+    if not settings.auto_seed_on_startup:
+        return
+    db = SessionLocal()
+    try:
+        seed_employees(db, count=DEFAULT_COUNT, reset=False)
+    finally:
+        db.close()

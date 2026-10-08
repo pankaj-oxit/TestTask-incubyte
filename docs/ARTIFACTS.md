@@ -14,7 +14,9 @@ Companion docs: [REQUIREMENTS.md](REQUIREMENTS.md), [IMPLEMENTATION_PLAN.md](IMP
 | 2 | Models, Alembic, FX seed, currency service | Done | `001` schema, `002` rates, `reference_data` DRY |
 | 2b | Docker Compose (Postgres + API) | Done | Vars in root `.env`; compose uses `${VAR}` only |
 | 3 | Employee CRUD + list/filters | Done | `/api/employees`, `/api/meta/filters`; 22 tests |
-| 4–9 | Seed 10k, insights, UI, Railway, video | Pending | See IMPLEMENTATION_PLAN |
+| 4 | Seed 10k employees | Done | `make seed`, startup auto-seed if empty |
+| 5 | Insights API | Done | `/api/insights/*`, `core/stats.py`; 34 tests total |
+| 6–9 | UI, Railway, video | Pending | See IMPLEMENTATION_PLAN |
 
 **Update rule:** After each phase, update this file (progress table, test coverage, AI log, performance if measured).
 
@@ -68,8 +70,9 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | 4 | 2b | Add Docker, vars from `.env` only | No secrets in compose file; `make env` for host | `docker compose config` |
 | 5 | 2 | Fix `make run` / pytest env | `backend/.env` for localhost; tests set env before import | 8 tests pass |
 | 6 | 3 | `/implementer` Phase 3 | Layered repo/service; allow-list `sort_by`; health at `/api/health` | 22 tests pass |
+| 7 | 4–5 | `/implementer` Phase 4+5 | Bulk seed + auto-startup; insights USD + 10 buckets | 34 tests pass |
 
-*Add a row when you finish Phase 4+.*
+*Add a row when you finish Phase 6+.*
 
 ---
 
@@ -80,7 +83,9 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | Health API | Done |
 | Currency service (unit) | Done |
 | Employee CRUD / filters | Done (`test_employees_api`, `test_meta_filters`) |
-| Insights | Phase 5 |
+| Seed (`seed_service`, `test_seed.py`) | Done |
+| Stats unit (`test_stats.py`) | Done |
+| Insights API (`test_insights_api.py`) | Done |
 
 Command: `cd backend && .venv/bin/pytest -q`
 
@@ -91,7 +96,8 @@ Command: `cd backend && .venv/bin/pytest -q`
 - Indexes on filter/sort columns (migration `001`).
 - `LIKE '%term%'` — OK at 10k; document if measured slow.
 - Bulk seed target: &lt;10s for 10k rows (Phase 4).
-- Timings: add here after load tests / deploy.
+- **Measured (dev, SQLite file):** 10,000 employees seeded in **~2.3s** via `bulk_insert_mappings` batches of 500 (2026-10-08). Re-measure on Postgres before deploy sign-off.
+- Insights endpoints: in-memory aggregation over employee rows (fine at 10k); list endpoint timing TBD Phase 8.
 
 ---
 

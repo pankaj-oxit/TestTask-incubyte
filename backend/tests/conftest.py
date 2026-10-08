@@ -3,6 +3,7 @@ import os
 # Must run before any `app.*` import (config loads Settings at import time)
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["CORS_ORIGINS"] = "http://localhost:5173"
+os.environ["AUTO_SEED_ON_STARTUP"] = "false"
 
 import pytest
 from fastapi.testclient import TestClient

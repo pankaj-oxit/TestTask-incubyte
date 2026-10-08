@@ -32,7 +32,11 @@ All Compose variables live in **`.env`** (see `.env.example`). `docker-compose.y
 
 ```bash
 cd backend && python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
-make env && make migrate && make run
+make env
+# Postgres must be up first (from repo root):
+#   make db-up    # or: docker compose up db -d — wait until healthy
+make migrate && make run
+make seed       # optional if DB empty; API also auto-seeds on startup
 make test
 ```
 
@@ -46,7 +50,7 @@ Set `VITE_API_URL=http://127.0.0.1:8000` in `frontend/.env` if needed.
 
 ## Production (planned)
 
-Railway backend + Railway Postgres; migrations on deploy; employee seed in Phase 4.
+Railway backend + Railway Postgres; migrations on deploy. On first startup (empty DB), API auto-seeds **10,000** employees unless `AUTO_SEED_ON_STARTUP=false`. Manual: `cd backend && make seed` (optional `--reset` via `python scripts/seed.py --reset`).
 
 ## Layout
 
