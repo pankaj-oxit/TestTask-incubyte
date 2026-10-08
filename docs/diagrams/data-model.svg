@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 420" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="780" height="420" fill="#f8f9fa" rx="8"/>
+  <text x="390" y="30" text-anchor="middle" font-size="17" font-weight="bold" fill="#1a1a2e">Data Model — Entity Relationship</text>
+  <!-- employees table -->
+  <rect x="60" y="55" width="280" height="340" rx="8" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+  <rect x="60" y="55" width="280" height="36" rx="8" fill="#4CAF50"/>
+  <text x="200" y="79" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">employees</text>
+  <rect x="60" y="91" width="280" height="22" fill="#f1f8e9"/>
+  <text x="80" y="107" font-size="11" font-weight="bold" fill="#1B5E20">🔑 id</text>
+  <text x="330" y="107" text-anchor="end" font-size="10" fill="#555">INTEGER PK</text>
+  <text x="80" y="127" font-size="11" fill="#333">employee_code</text>
+  <text x="330" y="127" text-anchor="end" font-size="10" fill="#555">VARCHAR(20) UNIQUE</text>
+  <rect x="60" y="131" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="147" font-size="11" fill="#333">first_name</text>
+  <text x="330" y="147" text-anchor="end" font-size="10" fill="#555">VARCHAR(100)</text>
+  <text x="80" y="167" font-size="11" fill="#333">last_name</text>
+  <text x="310" y="167" text-anchor="end" font-size="10" fill="#388E3C">★ indexed</text>
+  <rect x="60" y="171" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="187" font-size="11" fill="#333">email</text>
+  <text x="330" y="187" text-anchor="end" font-size="10" fill="#555">VARCHAR(255) UNIQUE</text>
+  <text x="80" y="207" font-size="11" fill="#333">job_title</text>
+  <text x="310" y="207" text-anchor="end" font-size="10" fill="#388E3C">★ indexed</text>
+  <rect x="60" y="211" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="227" font-size="11" fill="#333">department</text>
+  <text x="310" y="227" text-anchor="end" font-size="10" fill="#388E3C">★ indexed</text>
+  <text x="80" y="247" font-size="11" fill="#333">country_code</text>
+  <text x="310" y="247" text-anchor="end" font-size="10" fill="#388E3C">★ indexed</text>
+  <rect x="60" y="251" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="267" font-size="11" font-weight="bold" fill="#E65100">🔗 currency</text>
+  <text x="330" y="267" text-anchor="end" font-size="10" fill="#555">VARCHAR(3) FK →</text>
+  <text x="80" y="287" font-size="11" fill="#333">annual_salary</text>
+  <text x="330" y="287" text-anchor="end" font-size="10" fill="#555">INTEGER &gt; 0</text>
+  <rect x="60" y="291" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="307" font-size="11" fill="#333">hire_date</text>
+  <text x="330" y="307" text-anchor="end" font-size="10" fill="#555">DATE (not future)</text>
+  <text x="80" y="327" font-size="11" fill="#999">created_at</text>
+  <text x="330" y="327" text-anchor="end" font-size="10" fill="#999">TIMESTAMP</text>
+  <rect x="60" y="331" width="280" height="22" fill="#f9fbe7"/>
+  <text x="80" y="347" font-size="11" fill="#999">updated_at</text>
+  <text x="330" y="347" text-anchor="end" font-size="10" fill="#999">TIMESTAMP</text>
+  <rect x="60" y="358" width="280" height="35" fill="#E8F5E9"/>
+  <text x="200" y="373" text-anchor="middle" font-size="10" fill="#2E7D32">★★ Composite index:</text>
+  <text x="200" y="387" text-anchor="middle" font-size="10" font-weight="bold" fill="#2E7D32">(country_code, job_title)</text>
+  <!-- currency_rates table -->
+  <rect x="440" y="120" width="280" height="135" rx="8" fill="#fff" stroke="#E91E63" stroke-width="2"/>
+  <rect x="440" y="120" width="280" height="36" rx="8" fill="#E91E63"/>
+  <text x="580" y="144" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">currency_rates</text>
+  <rect x="440" y="156" width="280" height="22" fill="#fce4ec"/>
+  <text x="460" y="172" font-size="11" font-weight="bold" fill="#880E4F">🔑 currency</text>
+  <text x="710" y="172" text-anchor="end" font-size="10" fill="#555">VARCHAR(3) PK</text>
+  <text x="460" y="196" font-size="11" fill="#333">rate_to_usd</text>
+  <text x="710" y="196" text-anchor="end" font-size="10" fill="#555">FLOAT</text>
+  <rect x="440" y="201" width="280" height="52" fill="#fce4ec"/>
+  <text x="580" y="219" text-anchor="middle" font-size="10" fill="#880E4F">Fixed rates as of 2024-01-01</text>
+  <text x="580" y="235" text-anchor="middle" font-size="10" fill="#880E4F">USD=1.0 · GBP=1.27 · EUR=1.09</text>
+  <text x="580" y="249" text-anchor="middle" font-size="10" fill="#880E4F">INR=0.012 · JPY=0.0067 · + 5 more</text>
+  <!-- FK relationship line -->
+  <defs><marker id="fkarrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#E65100"/></marker></defs>
+  <line x1="340" y1="262" x2="438" y2="188" stroke="#E65100" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#fkarrow)"/>
+  <text x="385" y="230" text-anchor="middle" font-size="10" fill="#E65100" transform="rotate(-27,385,230)">many → 1</text>
+  <!-- Notes box -->
+  <rect x="440" y="310" width="280" height="95" rx="8" fill="#fff8e1" stroke="#FFC107" stroke-width="1.5"/>
+  <text x="580" y="330" text-anchor="middle" font-size="11" font-weight="bold" fill="#E65100">Design Notes</text>
+  <text x="460" y="350" font-size="10" fill="#555">• Salary = INTEGER (no float rounding)</text>
+  <text x="460" y="366" font-size="10" fill="#555">• Currency validated vs COUNTRY_CURRENCY_MAP</text>
+  <text x="460" y="382" font-size="10" fill="#555">• hire_date checked against UTC today</text>
+  <text x="460" y="398" font-size="10" fill="#555">• USD conversion for cross-country insights only</text>
+  <!-- Legend -->
+  <text x="80" y="410" font-size="10" fill="#388E3C">★ = indexed column</text>
+  <text x="220" y="410" font-size="10" fill="#E65100">🔗 = foreign key relationship</text>
+</svg>
