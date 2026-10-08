@@ -1,6 +1,6 @@
 """create_currency_rates_and_employees
 
-Revision ID: 001_create_currency_rates_and_employees
+Revision ID: 001_initial_schema
 Revises:
 Create Date: 2026-10-07
 
@@ -13,7 +13,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers
-revision = "001_create_currency_rates_and_employees"
+revision = "001_initial_schema"
 down_revision = None
 branch_labels = None
 depends_on = None

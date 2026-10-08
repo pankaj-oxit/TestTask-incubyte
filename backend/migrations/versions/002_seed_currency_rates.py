@@ -1,7 +1,7 @@
 """seed_currency_rates
 
 Revision ID: 002_seed_currency_rates
-Revises: 001_create_currency_rates_and_employees
+Revises: 001_initial_schema
 Create Date: 2026-10-07
 
 Inserts fixed exchange rates as of 2024-01-01.
@@ -11,7 +11,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "002_seed_currency_rates"
-down_revision = "001_create_currency_rates_and_employees"
+down_revision = "001_initial_schema"
 branch_labels = None
 depends_on = None
 

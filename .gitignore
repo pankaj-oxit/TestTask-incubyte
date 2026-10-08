@@ -4,6 +4,9 @@ backend/.env
 
 # Python
 .venv/
+*.egg-info/
+dist/
+build/
 **/__pycache__/
 *.pyc
 .coverage
