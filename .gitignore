@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Environment
+.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+.kiro/
+skills/
+
+# Dev-only (not for submission)
+agent-output/
+PROGRESS.md
+IMPLEMENTATION_PLAN.md
