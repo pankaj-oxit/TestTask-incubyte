@@ -15,5 +15,9 @@ RUN pip install --no-cache-dir "setuptools>=68" wheel \
     && pip install --no-cache-dir -e .
 
 COPY scripts ./scripts
+RUN chmod +x scripts/railway-start.sh scripts/docker-entrypoint.sh
 
 EXPOSE 8000
+
+# Railway / production: migrate then listen on $PORT (no --reload)
+CMD ["/bin/sh", "/app/scripts/railway-start.sh"]
