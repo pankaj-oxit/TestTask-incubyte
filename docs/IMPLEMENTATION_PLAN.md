@@ -18,7 +18,8 @@
 | 5 | Insights API | Done |
 | 6 | Frontend employees | Done |
 | 7 | Frontend insights | Done |
-| 8–9 | Polish, deploy, video | Pending |
+| 8 | Polish and performance | Done |
+| 9 | Deploy, video | Pending |
 
 ---
 
@@ -381,9 +382,9 @@ Use small commits with clear messages (`feat:`, `test:`, `docs:`, `chore:`, `per
 - Commits: `feat(ui): insights summary`, `feat(ui): pay by country and job title charts`, `feat(ui): salary distribution chart`
 
 ### Phase 8: Polish and performance
-- [ ] Loading, empty, and error states. Basic accessibility (labels, keyboard nav).
-- [ ] Measure list and insights speed, check query plans (`EXPLAIN QUERY PLAN`), record in ARTIFACTS.
-- [ ] *(Optional)* CSV export.
+- [x] Loading, empty, and error states. Basic accessibility (labels, keyboard nav).
+- [x] Measure list and insights speed, check query plans (`EXPLAIN QUERY PLAN`), record in ARTIFACTS.
+- [ ] *(Optional)* CSV export — deferred.
 - Commits: `feat(ui): loading and error states`, `perf: verify index usage`, `docs: performance notes`
 
 ### Phase 9: Deploy and deliver

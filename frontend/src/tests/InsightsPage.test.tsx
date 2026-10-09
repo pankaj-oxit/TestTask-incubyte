@@ -43,3 +43,4 @@ describe("InsightsPage", () => {
     expect(screen.getByText(/department breakdown is on the roadmap/i)).toBeInTheDocument();
   });
 });
+

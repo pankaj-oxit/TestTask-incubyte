@@ -25,6 +25,8 @@ import { Link } from "react-router-dom";
 
 import { deleteEmployee, fetchMetaFilters, listEmployees } from "../api/employees";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { EmptyState } from "../components/EmptyState";
+import { QueryErrorAlert } from "../components/QueryErrorAlert";
 import { formatLocalSalary } from "../utils/formatSalary";
 
 const SORT_COLUMNS = [
@@ -125,6 +127,7 @@ export default function EmployeesPage() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           sx={{ minWidth: 220 }}
+          inputProps={{ "aria-label": "Search employees by name or email" }}
         />
         <TextField
           select
@@ -182,21 +185,33 @@ export default function EmployeesPage() {
         </TextField>
       </Stack>
 
+      {filtersQuery.isError && (
+        <QueryErrorAlert
+          message={`Filters unavailable: ${(filtersQuery.error as Error).message}`}
+          onRetry={() => filtersQuery.refetch()}
+        />
+      )}
+
       {listQuery.isError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {(listQuery.error as Error).message}
+        <QueryErrorAlert
+          message={(listQuery.error as Error).message}
+          onRetry={() => listQuery.refetch()}
+        />
+      )}
+
+      {deleteMutation.isError && (
+        <Alert severity="error" role="alert" sx={{ mb: 2 }}>
+          Delete failed: {(deleteMutation.error as Error).message}
         </Alert>
       )}
 
       <TableContainer component={Paper}>
         {listQuery.isLoading ? (
-          <Box p={4} display="flex" justifyContent="center">
+          <Box p={4} display="flex" justifyContent="center" role="status">
             <CircularProgress aria-label="Loading employees" />
           </Box>
         ) : rows.length === 0 ? (
-          <Box p={4}>
-            <Typography color="text.secondary">No employees match your filters.</Typography>
-          </Box>
+          <EmptyState message="No employees match your filters." />
         ) : (
           <Table size="small">
             <TableHead>

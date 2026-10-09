@@ -19,7 +19,7 @@ export function Layout() {
             ACME Salary Manager
           </Typography>
         </Toolbar>
-        <Tabs value={tab} textColor="inherit" indicatorColor="secondary">
+        <Tabs value={tab} textColor="inherit" indicatorColor="secondary" aria-label="Main navigation">
           <Tab label="Employees" value="/employees" component={Link} to="/employees" />
           <Tab label="Insights" value="/insights" component={Link} to="/insights" />
         </Tabs>

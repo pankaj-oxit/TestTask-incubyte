@@ -22,11 +22,14 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: Props) {
+  const titleId = "confirm-dialog-title";
+  const descId = "confirm-dialog-desc";
+
   return (
-    <Dialog open={open} onClose={onCancel}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog open={open} onClose={onCancel} aria-labelledby={titleId} aria-describedby={descId}>
+      <DialogTitle id={titleId}>{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText id={descId}>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>

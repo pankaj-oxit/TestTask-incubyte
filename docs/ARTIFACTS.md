@@ -18,7 +18,8 @@ Companion docs: [REQUIREMENTS.md](REQUIREMENTS.md), [IMPLEMENTATION_PLAN.md](IMP
 | 5 | Insights API | Done | `/api/insights/*`, `core/stats.py`; 37 backend tests |
 | 6 | Frontend employees UI | Done | Vite + MUI + TanStack Query; list/filters/form |
 | 7 | Frontend insights UI | Done | Stat cards, recharts bars, filters, roadmap note |
-| 8–9 | Polish, deploy, video | Pending | See IMPLEMENTATION_PLAN |
+| 8 | Polish and performance | Done | Retry errors, a11y labels; EXPLAIN + API timings below |
+| 9 | Deploy, video | Pending | See IMPLEMENTATION_PLAN |
 
 **Update rule:** After each phase, update this file (progress table, test coverage, AI log, performance if measured).
 
@@ -76,6 +77,7 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | 7 | 4–5 | `/implementer` Phase 4+5 | Bulk seed + auto-startup; insights USD + 10 buckets | 37 tests pass |
 | 8 | 6 | `/implementer` Phase 6 | MUI employees CRUD UI; `/api` client; vitest x2 | build + tests green |
 | 9 | 7 | `/implementer` Phase 7 | recharts + ResizeObserver test stub; COUNTRY_CURRENCY_MAP for local avg | 3 vitest + build ok |
+| 10 | 8 | `/implementer` Phase 8 | QueryErrorAlert retry; `make explain`; CSV export skipped | 6 vitest; EXPLAIN on 10k rows |
 
 ---
 
@@ -99,6 +101,8 @@ Command: `cd backend && .venv/bin/pytest -q`
 | Employees list renders rows | Done (`EmployeesPage.test.tsx`) |
 | Form shows API validation error | Done (`EmployeeForm.test.tsx`) |
 | Insights summary + roadmap note | Done (`InsightsPage.test.tsx`) |
+| List empty state + error retry | Done (`EmployeesPage.test.tsx`) |
+| Query error retry control | Done (`QueryErrorAlert.test.tsx`) |
 
 Command: `cd frontend && npm test`
 
@@ -110,7 +114,13 @@ Command: `cd frontend && npm test`
 - `LIKE '%term%'` — OK at 10k; document if measured slow.
 - Bulk seed target: &lt;10s for 10k rows (Phase 4).
 - **Measured (dev, SQLite file):** 10,000 employees seeded in **~2.3s** via `bulk_insert_mappings` batches of 500 (2026-10-08). Re-measure on Postgres before deploy sign-off.
-- Insights endpoints: in-memory aggregation over employee rows (fine at 10k); list endpoint timing TBD Phase 8.
+- Insights endpoints: full-table scan + aggregate at 10k (~6 ms DB time for by-country group-by); acceptable for demo scale.
+- **Measured (Docker Postgres, ~10,004 rows, 2026-10-09):**
+  - `EXPLAIN ANALYZE` via `make explain` (or `docker compose exec backend python scripts/explain_queries.py`):
+    - List + `country_code=US` + sort `last_name`: **Index Scan** on `ix_employees_last_name`, execution **~0.4 ms**.
+    - List + `LIKE '%john%'` on name/email: **Index Scan** on `last_name` with filter (not ideal for `%term%`); execution **~4.8 ms**.
+    - Insights by country (`GROUP BY country_code`): **Seq Scan** + hash aggregate; execution **~6.1 ms**.
+  - HTTP (local compose, single request): `GET /api/employees` (page 1) **~24 ms**; `GET /api/insights/summary` **~108 ms**; `GET /api/insights/by-country` **~71 ms** (includes app aggregation + JSON).
 
 ---
 

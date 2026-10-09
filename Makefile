@@ -5,7 +5,7 @@ PYTHON  = $(BACKEND)/.venv/bin/python
 ALEMBIC = $(BACKEND)/.venv/bin/alembic
 PYTEST  = $(BACKEND)/.venv/bin/pytest
 
-.PHONY: help up down db-up env migrate run seed test ui \
+.PHONY: help up down db-up env migrate run seed test ui explain \
         migrate-new migrate-down migrate-status
 
 help:
@@ -24,6 +24,7 @@ help:
 	@echo "  make ui      Vite dev server on :5173"
 	@echo ""
 	@echo "  make test    Backend pytest + frontend vitest"
+	@echo "  make explain Postgres EXPLAIN for list/insights queries (needs DATABASE_URL)"
 
 up:
 	docker compose up --build
@@ -50,6 +51,9 @@ seed: env
 test:
 	cd $(BACKEND) && $(PYTEST) -q
 	cd frontend && npm test
+
+explain: env
+	cd $(BACKEND) && $(PYTHON) scripts/explain_queries.py
 
 ui:
 	cd frontend && npm run dev

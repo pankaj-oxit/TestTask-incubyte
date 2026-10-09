@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 
@@ -50,5 +51,46 @@ describe("EmployeesPage", () => {
 
     expect(await screen.findByText("Jane Doe")).toBeInTheDocument();
     expect(screen.getByText("jane@acme.example")).toBeInTheDocument();
+  });
+
+  it("shows empty state when list returns no rows", async () => {
+    vi.spyOn(employeesApi, "listEmployees").mockResolvedValue({
+      items: [],
+      total: 0,
+      page: 1,
+      page_size: 25,
+    });
+    vi.spyOn(employeesApi, "fetchMetaFilters").mockResolvedValue({
+      countries: [],
+      departments: [],
+      job_titles: [],
+    });
+
+    render(wrap(<EmployeesPage />));
+
+    expect(await screen.findByText(/no employees match your filters/i)).toBeInTheDocument();
+  });
+
+  it("retry refetches list after error", async () => {
+    const listEmployees = vi
+      .spyOn(employeesApi, "listEmployees")
+      .mockRejectedValueOnce(new Error("Server down"))
+      .mockResolvedValueOnce({
+        items: [],
+        total: 0,
+        page: 1,
+        page_size: 25,
+      });
+    vi.spyOn(employeesApi, "fetchMetaFilters").mockResolvedValue({
+      countries: [],
+      departments: [],
+      job_titles: [],
+    });
+
+    render(wrap(<EmployeesPage />));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Server down");
+    await userEvent.click(screen.getByRole("button", { name: /retry/i }));
+    expect(listEmployees).toHaveBeenCalledTimes(2);
   });
 });

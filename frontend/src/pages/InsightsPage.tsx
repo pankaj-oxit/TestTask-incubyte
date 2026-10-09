@@ -13,7 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
 import {
@@ -24,6 +24,9 @@ import {
 } from "../api/insights";
 import { fetchMetaFilters } from "../api/employees";
 import { COUNTRY_CURRENCY_MAP } from "../constants/countries";
+import { EmptyState } from "../components/EmptyState";
+import { InsightsAsyncSection } from "../components/InsightsAsyncSection";
+import { QueryErrorAlert } from "../components/QueryErrorAlert";
 import { SimpleBarChart } from "../components/SimpleBarChart";
 import { StatCard } from "../components/StatCard";
 import { formatLocalSalary } from "../utils/formatSalary";
@@ -57,6 +60,7 @@ export default function InsightsPage() {
       fetchInsightsByJobTitle({
         country: jobTitleCountry || undefined,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const distributionQuery = useQuery({
@@ -66,6 +70,7 @@ export default function InsightsPage() {
         country: distCountry || undefined,
         job_title: distJobTitle || undefined,
       }),
+    placeholderData: keepPreviousData,
   });
 
   const countryChartData = useMemo(
@@ -95,28 +100,34 @@ export default function InsightsPage() {
     [distributionQuery.data],
   );
 
-  const loading =
-    summaryQuery.isLoading ||
-    byCountryQuery.isLoading ||
-    byJobTitleQuery.isLoading ||
-    distributionQuery.isLoading;
+  const bootstrapping =
+    (summaryQuery.isPending && !summaryQuery.data) ||
+    (byCountryQuery.isPending && !byCountryQuery.data);
 
-  const error =
-    summaryQuery.error ??
-    byCountryQuery.error ??
-    byJobTitleQuery.error ??
-    distributionQuery.error;
+  const bootstrapError = summaryQuery.error ?? byCountryQuery.error;
 
-  if (loading) {
+  const refetchBootstrap = () => {
+    void summaryQuery.refetch();
+    void byCountryQuery.refetch();
+    void distributionQuery.refetch();
+    void filtersQuery.refetch();
+  };
+
+  if (bootstrapping) {
     return (
-      <Box display="flex" justifyContent="center" p={4}>
+      <Box display="flex" justifyContent="center" p={4} role="status">
         <CircularProgress aria-label="Loading insights" />
       </Box>
     );
   }
 
-  if (error) {
-    return <Alert severity="error">{(error as Error).message}</Alert>;
+  if (bootstrapError) {
+    return (
+      <Stack spacing={2} p={2}>
+        <Typography variant="h5">Insights</Typography>
+        <QueryErrorAlert message={(bootstrapError as Error).message} onRetry={refetchBootstrap} />
+      </Stack>
+    );
   }
 
   const summary = summaryQuery.data!;
@@ -124,6 +135,19 @@ export default function InsightsPage() {
   return (
     <Stack spacing={3}>
       <Typography variant="h5">Insights</Typography>
+
+      {filtersQuery.isError && (
+        <QueryErrorAlert
+          message={`Filters unavailable: ${(filtersQuery.error as Error).message}`}
+          onRetry={() => filtersQuery.refetch()}
+        />
+      )}
+
+      {summary.headcount === 0 && (
+        <Alert severity="warning" role="status">
+          No employee records yet. Seed the database or add employees to see insights.
+        </Alert>
+      )}
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 4 }}>
@@ -166,6 +190,13 @@ export default function InsightsPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
+                  {(byCountryQuery.data ?? []).length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <EmptyState message="No country breakdown available." />
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {(byCountryQuery.data ?? []).map((row) => (
                     <TableRow key={row.country_code}>
                       <TableCell>{row.country_code}</TableCell>
@@ -204,42 +235,58 @@ export default function InsightsPage() {
             ))}
           </TextField>
         </Stack>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <SimpleBarChart
-              title="Average pay by job title (USD, top 15)"
-              data={jobTitleChartData}
-              valueFormatter={formatUsd}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 6 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              By job title (detail)
-            </Typography>
-            <TableContainer sx={{ maxHeight: 320 }}>
-              <Table size="small" stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Job title</TableCell>
-                    <TableCell align="right">Count</TableCell>
-                    <TableCell align="right">Avg (USD)</TableCell>
-                    <TableCell align="right">Median (USD)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(byJobTitleQuery.data ?? []).map((row) => (
-                    <TableRow key={row.job_title}>
-                      <TableCell>{row.job_title}</TableCell>
-                      <TableCell align="right">{row.headcount}</TableCell>
-                      <TableCell align="right">{formatUsd(row.average_salary_usd)}</TableCell>
-                      <TableCell align="right">{formatUsd(row.median_salary_usd)}</TableCell>
+        <InsightsAsyncSection
+          isPending={byJobTitleQuery.isPending}
+          isFetching={byJobTitleQuery.isFetching}
+          isError={byJobTitleQuery.isError}
+          error={(byJobTitleQuery.error as Error) ?? null}
+          onRetry={() => byJobTitleQuery.refetch()}
+          busyLabel="Updating job title insights"
+        >
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <SimpleBarChart
+                title="Average pay by job title (USD, top 15)"
+                data={jobTitleChartData}
+                valueFormatter={formatUsd}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 6 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                By job title (detail)
+              </Typography>
+              <TableContainer sx={{ maxHeight: 320 }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Job title</TableCell>
+                      <TableCell align="right">Count</TableCell>
+                      <TableCell align="right">Avg (USD)</TableCell>
+                      <TableCell align="right">Median (USD)</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {(byJobTitleQuery.data ?? []).length === 0 && !byJobTitleQuery.isFetching && (
+                      <TableRow>
+                        <TableCell colSpan={4}>
+                          <EmptyState message="No job titles match this filter." />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {(byJobTitleQuery.data ?? []).map((row) => (
+                      <TableRow key={row.job_title}>
+                        <TableCell>{row.job_title}</TableCell>
+                        <TableCell align="right">{row.headcount}</TableCell>
+                        <TableCell align="right">{formatUsd(row.average_salary_usd)}</TableCell>
+                        <TableCell align="right">{formatUsd(row.median_salary_usd)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
           </Grid>
-        </Grid>
+        </InsightsAsyncSection>
       </Paper>
 
       <Paper sx={{ p: 2 }}>
@@ -278,11 +325,20 @@ export default function InsightsPage() {
             ))}
           </TextField>
         </Stack>
-        <SimpleBarChart
-          title={`Headcount by bucket (${distributionQuery.data?.headcount ?? 0} employees)`}
-          data={distributionChartData}
-          valueFormatter={(n) => String(n)}
-        />
+        <InsightsAsyncSection
+          isPending={distributionQuery.isPending}
+          isFetching={distributionQuery.isFetching}
+          isError={distributionQuery.isError}
+          error={(distributionQuery.error as Error) ?? null}
+          onRetry={() => distributionQuery.refetch()}
+          busyLabel="Updating salary distribution"
+        >
+          <SimpleBarChart
+            title={`Headcount by bucket (${distributionQuery.data?.headcount ?? 0} employees)`}
+            data={distributionChartData}
+            valueFormatter={(n) => String(n)}
+          />
+        </InsightsAsyncSection>
       </Paper>
     </Stack>
   );
