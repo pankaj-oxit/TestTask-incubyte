@@ -10,6 +10,42 @@ HR salary tool for ~10,000 employees (Incubyte take-home).
 
 All **`make`** targets are in the **root `Makefile`**. Run them from the repo root (`make help` lists everything).
 
+## Live deployment
+
+Production matches [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) §3a: **Railway** (API + Postgres) and **Vercel** (React UI). Pushes to the connected Git branch redeploy each service.
+
+| | Link |
+|---|------|
+| **Deployed app (frontend)** | [https://test-task-incubyte.vercel.app/](https://test-task-incubyte.vercel.app/) |
+| **Deployed API (backend apis)** | [https://testtask-incubyte-production.up.railway.app/docs](https://testtask-incubyte-production.up.railway.app/docs) |
+
+| Layer | Platform | URL |
+|-------|----------|-----|
+| **Frontend (UI)** | [Vercel](https://vercel.com) | [test-task-incubyte.vercel.app](https://test-task-incubyte.vercel.app/) |
+| **Backend (API)** | [Railway](https://railway.app) | [testtask-incubyte-production.up.railway.app](https://testtask-incubyte-production.up.railway.app) |
+| **Database** | Railway Postgres | Private; API uses referenced `DATABASE_URL` |
+
+| Endpoint | URL |
+|----------|-----|
+| Health | [GET /api/health](https://testtask-incubyte-production.up.railway.app/api/health) |
+| OpenAPI / Swagger | [/docs](https://testtask-incubyte-production.up.railway.app/docs) |
+
+**Vercel build env:** `VITE_API_URL=https://testtask-incubyte-production.up.railway.app` (no trailing slash; the app calls `/api/...`).
+
+**Railway API env:** `DATABASE_URL` (reference Postgres), `CORS_ORIGINS` must include `https://test-task-incubyte.vercel.app` (and localhost origins if you still test locally).
+
+On first deploy with an empty database, the API auto-seeds **10,000** employees (`AUTO_SEED_ON_STARTUP=true`). Migrations run on container start (`backend/scripts/railway-start.sh`).
+
+## Architecture diagrams
+
+**Data model**
+
+![Employee and currency tables](docs/diagrams/data-model.svg)
+
+**System architecture (local Docker and production)**
+
+![Browser, Vercel, Railway API, Postgres](docs/diagrams/system-architecture.svg)
+
 ## Run with Docker (recommended)
 
 Requires [Docker](https://docs.docker.com/get-docker/) and Compose.
@@ -49,10 +85,6 @@ make run          # API :8000 — separate terminal: make ui for :5173
 make seed         # optional if DB empty; API also auto-seeds on startup
 make test
 ```
-
-## Production (planned)
-
-Railway backend + Railway Postgres; migrations on deploy. Empty DB auto-seeds **10,000** employees unless `AUTO_SEED_ON_STARTUP=false`. Manual: `make seed` (or `backend/.venv/bin/python backend/scripts/seed.py --reset`).
 
 ## Layout
 
