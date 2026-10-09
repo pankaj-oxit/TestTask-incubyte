@@ -17,7 +17,8 @@ Companion docs: [REQUIREMENTS.md](REQUIREMENTS.md), [IMPLEMENTATION_PLAN.md](IMP
 | 4 | Seed 10k employees | Done | `make seed`, startup auto-seed if empty |
 | 5 | Insights API | Done | `/api/insights/*`, `core/stats.py`; 37 backend tests |
 | 6 | Frontend employees UI | Done | Vite + MUI + TanStack Query; list/filters/form |
-| 7–9 | Insights UI, polish, deploy, video | Pending | See IMPLEMENTATION_PLAN |
+| 7 | Frontend insights UI | Done | Stat cards, recharts bars, filters, roadmap note |
+| 8–9 | Polish, deploy, video | Pending | See IMPLEMENTATION_PLAN |
 
 **Update rule:** After each phase, update this file (progress table, test coverage, AI log, performance if measured).
 
@@ -74,8 +75,7 @@ All runtime settings come from **environment / `.env`**, not hardcoded in Python
 | 6 | 3 | `/implementer` Phase 3 | Layered repo/service; allow-list `sort_by`; health at `/api/health` | 22 tests pass |
 | 7 | 4–5 | `/implementer` Phase 4+5 | Bulk seed + auto-startup; insights USD + 10 buckets | 37 tests pass |
 | 8 | 6 | `/implementer` Phase 6 | MUI employees CRUD UI; `/api` client; vitest x2 | build + tests green |
-
-*Add a row when you finish Phase 7+.*
+| 9 | 7 | `/implementer` Phase 7 | recharts + ResizeObserver test stub; COUNTRY_CURRENCY_MAP for local avg | 3 vitest + build ok |
 
 ---
 
@@ -98,6 +98,7 @@ Command: `cd backend && .venv/bin/pytest -q`
 |------|--------|
 | Employees list renders rows | Done (`EmployeesPage.test.tsx`) |
 | Form shows API validation error | Done (`EmployeeForm.test.tsx`) |
+| Insights summary + roadmap note | Done (`InsightsPage.test.tsx`) |
 
 Command: `cd frontend && npm test`
 

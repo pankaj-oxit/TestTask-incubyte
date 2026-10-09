@@ -17,7 +17,7 @@
 | 4 | Seed 10k employees | Done |
 | 5 | Insights API | Done |
 | 6 | Frontend employees | Done |
-| 7 | Frontend insights | **Next** |
+| 7 | Frontend insights | Done |
 | 8–9 | Polish, deploy, video | Pending |
 
 ---
@@ -376,8 +376,8 @@ Use small commits with clear messages (`feat:`, `test:`, `docs:`, `chore:`, `per
 - Commits: `feat(ui): employees list`, `feat(ui): filters and search`, `feat(ui): create/edit form`
 
 ### Phase 7: Frontend, Insights
-- [ ] Stat cards, by-country and by-job-title views, distribution chart (10 buckets).
-- [ ] Roadmap note on Insights page: "Department breakdown coming next."
+- [x] Stat cards, by-country and by-job-title views, distribution chart (10 buckets).
+- [x] Roadmap note on Insights page: "Department breakdown coming next."
 - Commits: `feat(ui): insights summary`, `feat(ui): pay by country and job title charts`, `feat(ui): salary distribution chart`
 
 ### Phase 8: Polish and performance
